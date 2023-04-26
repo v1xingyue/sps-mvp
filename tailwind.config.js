@@ -5,9 +5,27 @@ module.exports = {
     './src/components/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      typography: (theme) => ({
+        DEFAULT: {
+          css: {
+            a: {
+              TextDecoration: 'none',
+              color: theme('colors.blue.500'),
+              fontWeight: '600',
+              '&:hover': {
+                TextDecoration: 'underline',
+              }
+            }
+          }
+        }
+      })
+    },
   },
-  plugins: [require("daisyui")],
+  plugins: [
+    require("daisyui"),
+    require('@tailwindcss/typography')
+  ],
   daisyui: {
     themes: ["light"],
   }
