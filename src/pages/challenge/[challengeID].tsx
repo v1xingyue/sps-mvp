@@ -32,7 +32,7 @@ export default function Home() {
                         {markdownContent}
                     </ReactMarkdown>
                     <div className="card-actions justify-center">
-                        <button className='btn btn-primary'>Submit</button>
+                        <button className="btn btn-primary">Submit</button>
                     </div>
                 </div>
 
