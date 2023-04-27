@@ -3,11 +3,14 @@ import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
 import { useWallet } from "@suiet/wallet-kit";
 import { SignedMessage } from "@mysten/sui.js";
+import { toB64 } from '@mysten/bcs';
+
 
 export function Signer() {
     const router = useRouter();
     const [data, updateSignData] = useState("");
     const [result, updateSignResult] = useState<SignedMessage>({ messageBytes: "", signature: "" });
+    const [pubKey, updatePubkey] = useState("");
     useEffect(() => {
         (async () => {
             console.log("render once ...");
@@ -16,7 +19,7 @@ export function Signer() {
             }
         })();
     }, [router.query]);
-    const { signMessage } = useWallet();
+    const { signMessage, account } = useWallet();
     const signContentAction = async () => {
         try {
             const result = await signMessage({
@@ -31,6 +34,13 @@ export function Signer() {
         }
     }
 
+    useEffect(() => {
+        if (account?.publicKey && account.publicKey.length > 0) {
+            updatePubkey(toB64(account.publicKey));
+        }
+        console.log("public key : ", account?.publicKey);
+    }, [account]);
+
     return (
         <div className="card lg:card-side bg-base-100 shadow-xl mt-5">
             <div className="card-body">
@@ -44,7 +54,14 @@ export function Signer() {
                     }
                 />
                 {
-                    result.messageBytes === "" || (<> <p>messageBytes: {result.messageBytes}</p> <b>signature: {result.signature}</b> </>)
+
+                }
+                {
+                    result.messageBytes === "" || (<>
+                        <p>publicKey: {pubKey}</p>
+                        <p>messageBytes: {result.messageBytes}</p>
+                        <b>signature: {result.signature}</b>
+                    </>)
                 }
                 <div className="card-actions justify-end">
                     <button

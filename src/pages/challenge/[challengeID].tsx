@@ -1,26 +1,34 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-
-
-type StringMap<T> = { [key: string]: T };
-const markdownMap: StringMap<string> = {
-    "simple-nft-example": "https://raw.githubusercontent.com/scaffold-eth/scaffold-eth-typescript-challenges/challenge-0-simple-nft/README.md"
-}
+import { initFirebase, getChallenge, snapshotToChallenges } from "../../firebase";
 
 export default function Home() {
     const router = useRouter();
-    console.log(router.query);
     const { challengeID } = router.query;
     const [markdownContent, setMarkdownContent] = useState("");
 
     useEffect(() => {
-        if (challengeID) {
-            const url = markdownMap[challengeID as string];
-            fetch(url).then(response => response.text()).then(text => {
-                console.log(text);
-                setMarkdownContent(text);
-            });
+        initFirebase();
+    }, [])
+
+    useEffect(() => {
+        if (challengeID && (typeof challengeID === "string")) {
+            (
+                async () => {
+                    const snap = await getChallenge(challengeID);
+                    const challenges = snapshotToChallenges(snap);
+                    console.log(challenges);
+                    if (challenges.length > 0) {
+                        const url = challenges[0].markdown as string;
+                        console.log(url);
+                        fetch(url).then(response => response.text()).then(text => {
+                            setMarkdownContent(text);
+                        });
+                    }
+                }
+            )();
+
         }
     }, [challengeID])
 
@@ -35,8 +43,6 @@ export default function Home() {
                         <button className="btn btn-primary">Submit</button>
                     </div>
                 </div>
-
-
             </div>
         </>
     )
