@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
-import { initFirebase, getChallenge, snapshotToChallenges } from "../../firebase";
+import { getChallenge } from "../../firebase";
 
 export default function Home() {
     const router = useRouter();
@@ -9,18 +9,13 @@ export default function Home() {
     const [markdownContent, setMarkdownContent] = useState("");
 
     useEffect(() => {
-        initFirebase();
-    }, [])
-
-    useEffect(() => {
         if (challengeID && (typeof challengeID === "string")) {
             (
                 async () => {
-                    const snap = await getChallenge(challengeID);
-                    const challenges = snapshotToChallenges(snap);
-                    console.log(challenges);
-                    if (challenges.length > 0) {
-                        const url = challenges[0].markdown as string;
+                    const challenge = await getChallenge(challengeID);
+                    console.log(challenge);
+                    if (challenge) {
+                        const url = challenge.markdown as string;
                         console.log(url);
                         fetch(url).then(response => response.text()).then(text => {
                             setMarkdownContent(text);

@@ -1,39 +1,40 @@
 import { useEffect, useState } from "react";
-import { getChallenges, initFirebase, snapshotToChallenges } from "../firebase";
+import { getChallenges } from "../firebase";
+
 
 const Index = () => {
     const [challenges, updateChallenges] = useState<Array<any>>([]);
     useEffect(() => {
         (async () => {
-            initFirebase();
-            const snapshot = await getChallenges();
-            const challenges = snapshotToChallenges(snapshot);
+            const challenges = await getChallenges();
+            console.log(challenges);
             updateChallenges(challenges);
         })()
     }, [])
-
     return (
         <>
-            <div className="card w-4/5 bg-base-100 shadow-xl mx-auto p-5 mt-2">
-                <div className="card-body">
-                    <h2 className="card-title"> challenge list </h2>
-                </div>
-                <div>
-                    {
-                        challenges.map(item => {
-                            console.log(item);
-                            return (
-                                <div key={item.id}>
-                                    <a className="link link-primary" href={`/challenge/${item.name}`}> {item.name}</a>
+            <div className="w-4/5 bg-base-100 mx-auto p-2 ">
+
+                {
+                    challenges.map(item => {
+                        return (
+                            <div className="card w-4/5 bg-base-100 shadow-xl mx-auto p-2 mt-2" key={item.id}>
+                                <div className="card-body">
+                                    <h2 className="card-title">
+                                        <a className="link link-primary" href={`/challenge/${item.name}`}>
+                                            Challenge {item.order} {item.name}
+                                        </a>
+                                    </h2>
                                     <a className="link link-info" href={item.markdown}> {item.markdown}</a>
-                                    <p> Description:
+                                    <p>
                                         {item.description}
                                     </p>
                                 </div>
-                            );
-                        })
-                    }
-                </div>
+                            </div>
+                        );
+                    })
+                }
+
             </div>
         </>
     );
