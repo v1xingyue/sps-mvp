@@ -1,20 +1,24 @@
 import { useEffect, useState } from "react";
 import { getChallenges } from "../firebase";
-
+import Loading from "../components/loading";
 
 const Index = () => {
     const [challenges, updateChallenges] = useState<Array<any>>([]);
+    const [loaded, updateLoaded] = useState(false);
     useEffect(() => {
         (async () => {
+            updateLoaded(false);
             const challenges = await getChallenges();
             console.log(challenges);
             updateChallenges(challenges);
+            updateLoaded(true);
         })()
     }, [])
     return (
         <>
-            <div className="w-4/5 bg-base-100 mx-auto p-2 ">
 
+            <div className="w-4/5 bg-base-100 mx-auto p-2 ">
+                {loaded ? null : <Loading />}
                 {
                     challenges.map(item => {
                         return (
