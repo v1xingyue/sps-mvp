@@ -10,7 +10,7 @@ export function NavBar() {
   const [profile, updateProfile] = useState<any>(null);
   useEffect(() => {
     if (connected && account) {
-      let address = account.address;
+      const address = account.address;
       console.log(address);
       (async () => {
         const profile = await getProfile(address);
