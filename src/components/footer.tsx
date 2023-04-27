@@ -11,8 +11,7 @@ const Footer = () => {
                     NonceGeek
                 </a>
             </div>
-            <div className="grid-flow-col gap-4 md:place-self-center md:justify-self-end">
-            </div>
+            <div className="grid-flow-col gap-4 md:place-self-center md:justify-self-end" />
         </footer>
     )
 }
