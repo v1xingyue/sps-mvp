@@ -3,6 +3,8 @@ import "../styles/loading.css";
 import '@suiet/wallet-kit/style.css';
 import { NavBar } from "../components/NavBar";
 import type { AppProps } from "next/app";
+import Footer from "../components/footer";
+
 import {
   WalletProvider,
   AllDefaultWallets
@@ -17,6 +19,7 @@ function WalletSelector({ Component, pageProps }: AppProps) {
         <div className="p-3">
           <Component {...pageProps} className="bg-base-300" />
         </div>
+        <Footer />
       </div>
     </WalletProvider>
   );
