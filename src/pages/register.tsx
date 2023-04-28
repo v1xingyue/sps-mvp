@@ -17,7 +17,6 @@ const Register = () => {
     }
 
     const doRegister = async () => {
-
         try {
             if (pubKey.length === 0) {
                 if (account?.publicKey && account.publicKey.length > 0) {
@@ -27,24 +26,26 @@ const Register = () => {
                 }
             } else {
                 const code = await loadCode();
-                console.log(code);
-                // const data = `You will register as a developer. \n random: ${code.hash}\n address: ${account?.address} \n`;
-                const data = "123";
+                const data = `You will register as a developer. \n random: ${code.hash}\n address: ${account?.address} \n`;
                 console.log(data);
                 const result = await signMessage({
                     message: new TextEncoder().encode(data)
                 });
-                console.log(result);
-                updateSignData(JSON.stringify(result));
                 const payload = {
-                    pubKey,
-                    github,
-                    result
+                    address: account?.address,
+                    message: data,
+                    signature: result.signature,
+                    github
                 };
-                fetch("/api/register/save", {
+                updateSignData(JSON.stringify(payload, null, 2));
+                const saveResult = await fetch("/api/register/save", {
                     method: "POST",
                     body: JSON.stringify(payload)
                 });
+                const saveJSON = await saveResult.json();
+                if (saveJSON.userSaved) {
+                    location.href = "/profile";
+                }
             }
         } catch (error) {
             console.log(error);
@@ -65,7 +66,9 @@ const Register = () => {
                 <h2 className="card-title">Register as developer</h2>
                 <input type="text" value={pubKey} onChange={(e) => updatePubkey(e.target.value)} placeholder="Public Key" className="input input-bordered mt-3" />
                 <input type="text" value={github} onChange={(e) => updateGithub(e.target.value)} placeholder="github" className="input input-bordered mt-3" />
-                {signData}
+                <pre>
+                    {signData}
+                </pre>
                 <div className="card-actions justify-end">
                     <button className="btn btn-primary" onClick={doRegister}>Register</button>
                 </div>

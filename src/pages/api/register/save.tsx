@@ -1,54 +1,40 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-// import { fromB64 } from '@mysten/sui.js';
-import { Secp256k1PublicKey, Ed25519PublicKey } from "@mysten/sui.js";
-// import nacl from 'tweetnacl';
+import { verifyMessage, IntentScope } from '@mysten/sui.js';
+import admin from '../../../firebase/admin/init';
 
-
-const parsePubKey = (key: string) => {
-    try {
-        return [new Ed25519PublicKey(key), "Ed25519"];
-    } catch (error) {
-        try {
-            return [new Secp256k1PublicKey(key), "Secp256k1"];
-        } catch (error) {
-            return [null, "none"];
-        }
-    }
-}
-
-const Handler = (req: NextApiRequest, res: NextApiResponse) => {
-    const { pubKey, github, result: { messageBytes, signature } } = JSON.parse(req.body);
-    const [pub, keyType] = parsePubKey(pubKey);
-    console.log(messageBytes, signature);
-    if (keyType === "none") {
+const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
+    const { address, message, signature, github } = JSON.parse(req.body);
+    if (signature === null || address == null || message == null) {
         res.status(400).json({
-            error: "Invalid public key"
+            error: "Invalid data provided"
         });
     } else {
-        res.status(200).json({
-            pubKey, github, pub, keyType
-        })
-        // const signValid = false;
-        // const d = fromB64(signature);
-        // console.log(d.length);
-        // if (keyType === "Ed25519" && (pub instanceof Ed25519PublicKey)) {
-        //     console.log(pub.toBytes());
-        //     // const isValid = nacl.sign.detached.verify(
-        //     //     fromB64(messageBytes),
-        //     //     fromB64(signature),
-        //     //     pub.toBytes(),
-        //     // );
-        //     // console.log(isValid);
-        // }
-        // if (signValid) {
-        //     res.status(200).json({
-        //         pubKey, github, pub, keyType
-        //     })
-        // } else {
-        //     res.status(200).json({
-        //         error: "Invalid signature"
-        //     })
-        // }
+        const signData = new TextEncoder().encode(message);
+        const isValid = await verifyMessage(
+            signData, signature, IntentScope.PersonalMessage
+        );
+        if (isValid) {
+            console.log("isValid : ", isValid);
+            const db = admin.firestore();
+            const userDB = db.collection("users");
+            const doc = userDB.doc(address);
+            const userSaved = await doc.set({
+                register_time: new Date(),
+                is_admin: false,
+                address,
+                github,
+            });
+            res.status(200).json({
+                isValid,
+                userSaved
+            });
+        } else {
+            res.status(200).json({
+                isValid: false,
+                message: "signature verification failed"
+            });
+        }
+
     }
 
 }
