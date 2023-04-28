@@ -38,7 +38,7 @@ export function Signer() {
         if (account?.publicKey && account.publicKey.length > 0) {
             updatePubkey(toB64(account.publicKey));
         }
-        console.log("public key : ", account?.publicKey);
+        // console.log("public key : ", account?.publicKey);
     }, [account]);
 
     return (
