@@ -18,41 +18,34 @@ const Register = () => {
 
     const doRegister = async () => {
         try {
-            if (pubKey.length === 0) {
-                if (account?.publicKey && account.publicKey.length > 0) {
-                    updatePubkey(toB64(account.publicKey));
-                } else {
-                    alert("You need input public key by yourself.");
-                }
-            } else {
-                const code = await loadCode();
-                const data = `You will register as a developer. \n random: ${code.hash}\n address: ${account?.address} \n`;
-                console.log(data);
-                const result = await signMessage({
-                    message: new TextEncoder().encode(data)
-                });
-                const payload = {
-                    address: account?.address,
-                    message: data,
-                    signature: result.signature,
-                    github
-                };
-                updateSignData(JSON.stringify(payload, null, 2));
-                const saveResult = await fetch("/api/register/save", {
-                    method: "POST",
-                    body: JSON.stringify(payload)
-                });
-                const saveJSON = await saveResult.json();
-                if (saveJSON.userSaved) {
-                    location.href = "/profile";
-                }
+            if (account?.publicKey && account.publicKey.length > 0) {
+                updatePubkey(toB64(account.publicKey));
+            }
+            const code = await loadCode();
+            const data = `You will register as a developer. \n random: ${code.hash}\n address: ${account?.address} \n`;
+            console.log(data);
+            const result = await signMessage({
+                message: new TextEncoder().encode(data)
+            });
+            const payload = {
+                address: account?.address,
+                message: data,
+                signature: result.signature,
+                github
+            };
+            updateSignData(JSON.stringify(payload, null, 2));
+            const saveResult = await fetch("/api/register/save", {
+                method: "POST",
+                body: JSON.stringify(payload)
+            });
+            const saveJSON = await saveResult.json();
+            if (saveJSON.userSaved) {
+                location.href = "/profile";
             }
         } catch (error) {
             console.log(error);
             alert(error);
         }
-
-
     }
     useEffect(() => {
         if (account?.publicKey && account.publicKey.length > 0) {
