@@ -31,8 +31,15 @@ export default function Home() {
         }
     }, [challengeID])
 
+    const submitChallenge = async () => {
+        console.log("submit challenge");
+    };
+
     return (
         <>
+
+
+
             {loaded ? (
                 <div className="card w-4/5 bg-base-100 shadow-xl mx-auto p-5">
                     <div className="card-body">
@@ -40,7 +47,7 @@ export default function Home() {
                             {markdownContent}
                         </ReactMarkdown>
                         <div className="card-actions justify-center">
-                            <button className="btn btn-primary">Submit</button>
+                            <button className="btn btn-primary" onClick={submitChallenge}>Submit</button>
                         </div>
                     </div>
                 </div>
