@@ -2,25 +2,29 @@ import { useRouter } from 'next/router'
 import { useEffect, useState } from 'react';
 import ReactMarkdown from 'react-markdown';
 import { getChallenge } from "../../firebase";
+import Loading from "../../components/loading";
 
 export default function Home() {
     const router = useRouter();
     const { challengeID } = router.query;
     const [markdownContent, setMarkdownContent] = useState("");
+    const [loaded, updateLoaded] = useState(false);
 
     useEffect(() => {
         if (challengeID && (typeof challengeID === "string")) {
             (
                 async () => {
+                    updateLoaded(false);
                     const challenge = await getChallenge(challengeID);
                     console.log(challenge);
                     if (challenge) {
                         const url = challenge.markdown as string;
                         console.log(url);
-                        fetch(url).then(response => response.text()).then(text => {
-                            setMarkdownContent(text);
-                        });
+                        const resp = await fetch(url);
+                        const markdown = await resp.text();
+                        setMarkdownContent(markdown);
                     }
+                    updateLoaded(true);
                 }
             )();
 
@@ -29,16 +33,18 @@ export default function Home() {
 
     return (
         <>
-            <div className="card w-4/5 bg-base-100 shadow-xl mx-auto p-5">
-                <div className="card-body">
-                    <ReactMarkdown className="prose prose-lg">
-                        {markdownContent}
-                    </ReactMarkdown>
-                    <div className="card-actions justify-center">
-                        <button className="btn btn-primary">Submit</button>
+            {loaded ? (
+                <div className="card w-4/5 bg-base-100 shadow-xl mx-auto p-5">
+                    <div className="card-body">
+                        <ReactMarkdown className="prose prose-lg">
+                            {markdownContent}
+                        </ReactMarkdown>
+                        <div className="card-actions justify-center">
+                            <button className="btn btn-primary">Submit</button>
+                        </div>
                     </div>
                 </div>
-            </div>
+            ) : <Loading />}
         </>
     )
 
