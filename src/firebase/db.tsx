@@ -1,8 +1,9 @@
-import { getFirestore, collection, getDocs, QuerySnapshot, query, where } from "firebase/firestore";
+import { getFirestore, collection, getDocs, QuerySnapshot, query, where, orderBy } from "firebase/firestore";
 export const getChallenges = async () => {
     const fileStore = getFirestore()
     const colref = collection(fileStore, "challenges");
-    const snapshot = await getDocs(colref);
+    const q = query(colref, orderBy("order", "asc"));
+    const snapshot = await getDocs(q);
     return snapshotToChallenges(snapshot);
 }
 
