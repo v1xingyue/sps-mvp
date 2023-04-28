@@ -1,24 +1,10 @@
 import Image from "next/image";
 import { NavItem } from "./NavItem";
 import { SuiConnect } from "./SuiConnect";
-import { useEffect, useState } from "react";
-import { useWallet } from "@suiet/wallet-kit";
-import { getProfile } from "../firebase/index";
+import { useProfile } from "../hooks";
 
 export function NavBar() {
-  const { connected, account } = useWallet();
-  const [profile, updateProfile] = useState<any>(null);
-  useEffect(() => {
-    if (connected && account) {
-      const address = account.address;
-      console.log(address);
-      (async () => {
-        const profile = await getProfile(address);
-        console.log(address, profile);
-        updateProfile(profile);
-      })();
-    }
-  }, [account, connected])
+  const [profile] = useProfile();
   return (
     <nav className="navbar py-4 px-4 bg-base-100">
       <div className="flex-1">
