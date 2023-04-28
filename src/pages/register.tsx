@@ -5,8 +5,8 @@ import { toB64 } from '@mysten/bcs';
 const Register = () => {
     const [pubKey, updatePubkey] = useState("");
     const [github, updateGithub] = useState("");
-    const { signMessage, account } = useWallet();
     const [signData, updateSignData] = useState("");
+    const { signMessage, account } = useWallet();
 
     const loadCode = async () => {
         if (account && account.address) {

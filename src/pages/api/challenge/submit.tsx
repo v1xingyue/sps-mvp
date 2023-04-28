@@ -1,10 +1,11 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { verifyMessage, IntentScope } from '@mysten/sui.js';
 import admin from '../../../firebase/admin/init';
+import { isSignedByAddress } from "../../../tools";
 
 const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
-    const { message, signature, deployURL, contractURL, description, challengeName } = JSON.parse(req.body);
-    if (signature === null || deployURL == null || contractURL == null || challengeName == null) {
+    const { message, address, signature, deployedURL, contractURL, description, challengeID } = JSON.parse(req.body);
+    if (signature === null || deployedURL == null || contractURL == null || challengeID == null) {
         res.status(400).json({
             error: "Invalid data provided"
         });
@@ -13,17 +14,19 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
         const isValid = await verifyMessage(
             signData, signature, IntentScope.PersonalMessage
         );
-        if (isValid) {
+        const isRealValid = await isSignedByAddress(address, signature);
+        if (isValid && isRealValid) {
             console.log("isValid : ", isValid);
             const db = admin.firestore();
             const userDB = db.collection("challenge_submit");
             const doc = userDB.doc();
             const userSaved = await doc.set({
                 submit_time: new Date(),
-                deployURL,
+                address,
+                deployedURL,
                 description,
                 contractURL,
-                challengeName
+                challengeID
             });
             res.status(200).json({
                 isValid,
@@ -31,7 +34,8 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
             });
         } else {
             res.status(200).json({
-                isValid: false,
+                isValid,
+                isRealValid,
                 message: "signature verification failed"
             });
         }

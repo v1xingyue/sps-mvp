@@ -1,6 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { verifyMessage, IntentScope } from '@mysten/sui.js';
 import admin from '../../../firebase/admin/init';
+import { parsePublicKey } from '../../../tools';
 
 const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { address, message, signature, github } = JSON.parse(req.body);
@@ -14,6 +15,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
             signData, signature, IntentScope.PersonalMessage
         );
         if (isValid) {
+            const publicKeyB64 = parsePublicKey(signature);
             console.log("isValid : ", isValid);
             const db = admin.firestore();
             const userDB = db.collection("users");
@@ -22,6 +24,7 @@ const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
                 register_time: new Date(),
                 is_admin: false,
                 address,
+                publicKeyB64,
                 github,
             });
             res.status(200).json({
