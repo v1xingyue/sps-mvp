@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next';
 import { verifyMessage, IntentScope } from '@mysten/sui.js';
 import admin from '../../../firebase/admin/init';
-import { parsePublicKey } from '../../../tools';
+import { parsePublicKey } from '../../../utils';
 
 const Handler = async (req: NextApiRequest, res: NextApiResponse) => {
     const { address, message, signature, github } = JSON.parse(req.body);
