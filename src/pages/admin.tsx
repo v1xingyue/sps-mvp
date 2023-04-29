@@ -15,9 +15,8 @@ const Admin = () => {
         <div className="card w-full shadow-xl ">
             <div className="card-body">
                 <h2>Admin profile</h2>
-
                 {
-                    challenges.length == 0 ? null : (
+                    challenges.length === 0 ? null : (
                         <>
                             {
                                 challenges.map(

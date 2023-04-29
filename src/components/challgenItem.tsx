@@ -6,7 +6,7 @@ const ChallengeItem = ({ challenge }: { challenge: any }) => {
     const { signMessage, address } = useWallet();
 
     const saveParams = async () => {
-        const message = `You will update : ` + JSON.stringify(params);
+        const message = `You will update : ${JSON.stringify(params)}`;
         const result = await signMessage({
             message: new TextEncoder().encode(message)
         });
@@ -21,7 +21,6 @@ const ChallengeItem = ({ challenge }: { challenge: any }) => {
     }
     return (
         <div id={challenge.id} className="mt-3">
-
             <p className="mt-1"> Order: <input
                 className="input input-info w-3/5"
                 type="text"
