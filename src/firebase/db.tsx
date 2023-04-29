@@ -30,3 +30,11 @@ export const getProfile = async (address: string) => {
     const snapshot = await getDocs(q);
     return snapshotToChallenges(snapshot)[0];
 };
+
+export const getSubmit = async (address: string) => {
+    const fileStore = getFirestore()
+    const colref = collection(fileStore, "challenge_submit");
+    const q = query(colref, where("address", "==", address));
+    const snapshot = await getDocs(q);
+    return snapshotToChallenges(snapshot);
+}
