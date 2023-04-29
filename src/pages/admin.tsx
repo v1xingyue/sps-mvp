@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { getChallenges } from "../firebase";
+import ChallengeItem from "../components/challgenItem";
 
 const Admin = () => {
     const [challenges, updateChallenges] = useState<any[]>([])
@@ -22,14 +23,7 @@ const Admin = () => {
                                 challenges.map(
                                     (challenge) => {
                                         return (
-                                            <div id={challenge.id} className="mt-3">
-                                                <ul>Order: {challenge.order}</ul>
-                                                <ul>{challenge.name}</ul>
-                                                <ul>{challenge.markdown}</ul>
-                                                <ul>{challenge.description}</ul>
-                                                <button className="btn btn-primary mt-2">Save</button>
-                                                <button className="btn btn-danger mt-2 ml-3">Remove</button>
-                                            </div>
+                                            <ChallengeItem key={challenge.id} challenge={challenge} />
                                         )
                                     }
                                 )
