@@ -1,9 +1,24 @@
 import { useWallet } from "@suiet/wallet-kit";
 import { useState } from "react";
 
-const ChallengeItem = ({ challenge }: { challenge: any }) => {
+const ChallengeItem = ({ challenge, reload }: { challenge: any, reload: Function }) => {
     const [params, updateParams] = useState<any>(challenge);
     const { signMessage, address } = useWallet();
+    const removeChallenge = async () => {
+        const message = `You will remove : ${params.name}`;
+        const result = await signMessage({
+            message: new TextEncoder().encode(message)
+        });
+        const resp = await fetch("/api/challenge/remove", {
+            method: "POST",
+            body: JSON.stringify({ name: params.name, message, signature: result.signature, address })
+        });
+        const data = await resp.json();
+        if (data.isValid && data.result) {
+            alert("Challenge removed");
+            reload();
+        }
+    }
 
     const saveParams = async () => {
         const message = `You will update : ${JSON.stringify(params)}`;
@@ -17,6 +32,7 @@ const ChallengeItem = ({ challenge }: { challenge: any }) => {
         const data = await resp.json();
         if (data.isValid && data.userSaved) {
             alert("Challenge updated");
+            reload();
         }
     }
     return (
@@ -55,7 +71,7 @@ const ChallengeItem = ({ challenge }: { challenge: any }) => {
             /></p>
 
             <button onClick={saveParams} className="btn btn-primary mt-2">Save</button>
-            <button className="btn btn-danger mt-2 ml-3">Remove</button>
+            <button onClick={removeChallenge} className="btn btn-danger mt-2 ml-3">Remove</button>
         </div >
     )
 }
